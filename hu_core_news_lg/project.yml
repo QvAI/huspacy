@@ -38,6 +38,7 @@ vars:
   tagger_config: tagger
   parser_config: parser
   ner_config: ner
+  edit_tree_lemmatizer_config: edit-tree-lemmatizer
   gpu: 0
 
 #TODO: remove GPU settings
@@ -319,11 +320,28 @@ commands:
       - "lemmy evaluate ${vars.models_path}/lemmy-${vars.package_version}.bin ${vars.processed_data_path}/${vars.szegedcorpus}/test.conllu"
       - "lemmy evaluate ${vars.models_path}/lemmy-${vars.package_version}.bin ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu"
     deps:
-      - ${vars.processed_data_path}/${vars.nerkor}/train.conllup
-      - ${vars.processed_data_path}/${vars.nerkor}/test.conllup
+      - ${vars.processed_data_path}/${vars.szegedcorpus}/train.conllu
+      - ${vars.processed_data_path}/${vars.szegedcorpus}/test.conllu
       - ${vars.raw_data_path}/${vars.treebank}/${vars.test_name}.conllu
     outputs:
       - ${vars.models_path}/lemmy-${vars.package_version}.bin
+
+  
+  - name: train_edit_tree_lemmatizer
+    help: "Train the experimental edit tree lemmatizer"
+    script:
+      - "spacy train configs/${vars.edit_tree_lemmatizer_config}.cfg
+           --output ${vars.models_path}/${vars.package_name}-edit-tree-lemmatizer-${vars.package_version}
+           --gpu-id ${vars.gpu}
+           --paths.train ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
+           --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
+#           --training.logger.project_name ${vars.wandb_project}"
+    deps:
+      - ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
+      - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
+      - configs/${vars.tagger_config}.cfg 
+    outputs:
+      - ${vars.models_path}/${vars.package_name}-edit-tree-lemmatizer-${vars.package_version}/model-best
 
 
   - name: pretrain_tagger
@@ -428,12 +446,14 @@ commands:
           --code ${vars.package_init}
           ${vars.models_path}/${vars.package_name}-${vars.package_version}
           --paths.parser_model ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
-          --paths.lemmy_model ${vars.models_path}/lemmy-${vars.package_version}.bin
-          --paths.ner_model ${vars.models_path}/${vars.package_name}-${vars.ner_merged}-${vars.package_version}/model-best"
+          --paths.edit_tree_lemmatizer_model ${vars.models_path}/${vars.package_name}-edit-tree-lemmatizer-${vars.package_version}/model-best"
+#          --paths.ner_model ${vars.models_path}/${vars.package_name}-${vars.ner_merged}-${vars.package_version}/model-best"
+#          --paths.lemmy_model ${vars.models_path}/lemmy-${vars.package_version}.bin
     deps:
       - ${vars.models_path}/${vars.package_name}-parser-${vars.package_version}/model-best
-      - ${vars.models_path}/${vars.package_name}-${vars.ner_merged}-${vars.package_version}/model-best
-      - ${vars.models_path}/lemmy-${vars.package_version}.bin
+#      - ${vars.models_path}/${vars.package_name}-${vars.ner_merged}-${vars.package_version}/model-best
+      - ${vars.models_path}/${vars.package_name}-edit-tree-lemmatizer-${vars.package_version}/model-best
+ #     - ${vars.models_path}/lemmy-${vars.package_version}.bin
       - ${vars.package_init}
     outputs:
       - ${vars.models_path}/${vars.package_name}-${vars.package_version}

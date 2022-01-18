@@ -11,7 +11,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.7.1"
-spacy = "^3.2.0"
+spacy = "==3.2.0"
 lemmy3 = "^3.2.0a"
 spacy-ray = "^0.1.0"
 wandb = "^0.10.23"
@@ -23,6 +23,7 @@ scikit-learn = "^0.24.2"
 spacy_conll = "^3.0"
 contexttimer = "^0.3.3"
 bump2version = "^1.0.1"
+spacy-experimental = "0.2.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"
