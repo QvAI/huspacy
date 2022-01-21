@@ -122,6 +122,14 @@ workflows:
     - preprocess_ud
     - train_lemmatizer
 
+  edit_tree_lemmatizer:
+    - init_vectors
+    - preprocess_ud
+    - preprocess_szegedcorpus
+    - train_edit_tree_lemmatizer
+    - assemble
+    - evaluate
+
   ner:
     - preprocess_nerkor
     - preprocess_szegedner
@@ -339,7 +347,7 @@ commands:
     deps:
       - ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
       - ${vars.processed_data_path}/${vars.treebank}/dev.spacy
-      - configs/${vars.tagger_config}.cfg 
+      - configs/${vars.edit_tree_lemmatizer_config}.cfg 
     outputs:
       - ${vars.models_path}/${vars.package_name}-edit-tree-lemmatizer-${vars.package_version}/model-best
 
