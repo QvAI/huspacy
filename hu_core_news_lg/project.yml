@@ -341,6 +341,7 @@ commands:
       - "spacy train configs/${vars.edit_tree_lemmatizer_config}.cfg
            --output ${vars.models_path}/${vars.package_name}-edit-tree-lemmatizer-${vars.package_version}
            --gpu-id ${vars.gpu}
+           --paths.vectors ${vars.external_data_path}/webcorpuswiki.word2vec.vec
            --paths.train ${vars.processed_data_path}/${vars.szegedcorpus}/train.spacy
            --paths.dev ${vars.processed_data_path}/${vars.treebank}/dev.spacy"
 #           --training.logger.project_name ${vars.wandb_project}"
